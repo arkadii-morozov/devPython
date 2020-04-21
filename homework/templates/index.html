@@ -6,14 +6,35 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <style type="text/css">
+            h2{
+                font-size: 130%;
+                font-family: Arial, sans-serif;
+                color: #333366;
+                text-align:center;
+            }
+            h1{
+                text-align:center;
+            }
+            table{
+                background-color:pink;
+            }
+            thead{
+                background-color:#99ccff;
+            }
+            hr{
+            width: 100%; color: black; height: 1px; background-color:black;
+            }
+
+
+        </style>
 	</head>
 	<body>
         <div class="container">
-            <h1 style="text-align:center;">Мой деканат</h1>
-
+            <h1>Мой деканат</h1>
             <h2>Успеваемость студентов</h2>
-            <table class="table table-striped" style="background-color:pink;">
-                <thead style="background-color:#99ccff;">
+            <table class="table table-striped" >
+                <thead>
                 <tr >
                   <th>id</th>
                   <th>ФИО</th>
@@ -40,8 +61,68 @@
                     {% endfor %}
                 </tbody>
             </table>
-            <h4>Отличники:{{excellent_students}}</h4>
-            <h4>Отчислить:{{bad_students}}</h4>
+            <hr/>
+            <h2>Студенты отличники</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>ФИО</th>
+                        <th>МатАн</th>
+                        <th>БЖД</th>
+                        <th>Философия</th>
+                        <th>Иностранный язык</th>
+                        <th>Физическая культура</th>
+                        <th>Средний балл</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in excellent_students %}
+                        <tr>
+                            <th scope="row">{{student.id}}</th>
+                            <td>{{student.fio}}</td>
+                            <td>{{student.matan}}</td>
+                            <td>{{student.bjd}}</td>
+                            <td>{{student.philosophy}}</td>
+                            <td>{{student.english}}</td>
+                            <td>{{student.sport}}</td>
+                            <td>{{student.average}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <hr/>
+            <h2>Студенты на отчисление</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>ФИО</th>
+                        <th>МатАн</th>
+                        <th>БЖД</th>
+                        <th>Философия</th>
+                        <th>Иностранный язык</th>
+                        <th>Физическая культура</th>
+                        <th>Средний балл</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in bad_students %}
+                        <tr>
+                            <th scope="row">{{student.id}}</th>
+                            <td>{{student.fio}}</td>
+                            <td>{{student.matan}}</td>
+                            <td>{{student.bjd}}</td>
+                            <td>{{student.philosophy}}</td>
+                            <td>{{student.english}}</td>
+                            <td>{{student.sport}}</td>
+                            <td>{{student.average}}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+<!--            <h4>Отличники:{{excellent_students}}</h4>-->
+<!--            <h4>Отчислить:{{bad_students}}</h4>-->
         </div>
 	</body>
 </html>

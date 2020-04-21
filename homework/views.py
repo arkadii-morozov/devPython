@@ -5,16 +5,21 @@ from django.views.generic.base import TemplateView
 class IndexView(TemplateView):
     template_name = "index.html"
 
-    students_list = Student.get_students()
-    average_bals_students = Statistics.calculate_average_bals(students_list)
-    perfomance_students = Statistics.calculate_performance(average_bals_students)
+    #students_list = Student.get_students()
+    #average_bals_students = Statistics.calculate_average_bals(students_list)
+    #perfomance_students = Statistics.calculate_performance(average_bals_students)
 
 
     def get_context_data(self, **kwargs):
 
+        students_list = Student().get_students()
+        statistics = Statistics()
+        students_list_with_average_bals = statistics.calculate_average_bals(students_list)
+        students_list_with_perfomance= statistics.calculate_performance(students_list_with_average_bals)
+
         context = super(IndexView, self).get_context_data(**kwargs)
         context.update(
-            perfomance_students
+            students_list_with_perfomance
         )
         return context
 
@@ -26,11 +31,11 @@ class Student:
                 'id': 1,
                 'fio': 'Петров А.В.',
                 'matan': 2,
-                'bjd': 3,
-                'philosophy': 4,
-                'english': 5,
-                'sport': 2.3,
-                'average': 2.0,
+                'bjd': 2.3,
+                'philosophy': 2.4,
+                'english': 2,
+                'sport': 2.1,
+                'average': 2.3,
             },
             {
                 'id': 2,
@@ -80,11 +85,11 @@ class Student:
             {
                 'id': 7,
                 'fio': 'Трунина П.Н.',
-                'matan': 3.2,
-                'bjd': 4.0,
-                'philosophy': 3.1,
-                'english': 3.4,
-                'sport': 4.0,
+                'matan': 2.2,
+                'bjd': 2.0,
+                'philosophy': 2.1,
+                'english': 2.4,
+                'sport': 2.0,
             },
         ],
     }
@@ -105,10 +110,10 @@ class Statistics:
         # расчет среднего бала по каждому студенту
         for student in range(len_big_dict):
             dict_statistics = array_statistics[student]
-            real_average = 0
+            real_average = float(0.0)
             for key, value in dict_statistics.items():
                 if key != 'id' and key != 'fio':
-                    real_average += value
+                    real_average += float(value)
 
             real_average = '{:.2f}'.format(real_average / 5)
             dict_statistics['average'] = real_average
@@ -150,6 +155,8 @@ class Statistics:
 
 class Subject:
     pass
+#название предмета
+#
 
 class Score:
     # Subject, Student, value
