@@ -1,17 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.views.generic.base import TemplateView
 
+from .models import Students,Subjects,Score
 
 class IndexView(TemplateView):
     template_name = "index.html"
 
-    #students_list = Student.get_students()
-    #average_bals_students = Statistics.calculate_average_bals(students_list)
-    #perfomance_students = Statistics.calculate_performance(average_bals_students)
-
-
     def get_context_data(self, **kwargs):
-
         students_list = Student().get_students()
         statistics = Statistics()
         students_list_with_average_bals = statistics.calculate_average_bals(students_list)
@@ -23,75 +18,35 @@ class IndexView(TemplateView):
         )
         return context
 
+    def get_records(self): # Метод - получает записи из бд , помещает в словарь, возвращает словарь
+        pass
+
 
 class Student:
+    stud_list = Students.objects.all().values()
+    score_list = Score.objects.all().values()
+    subject_list = Subjects.objects.all().values()
+    result_list = []
+    student_dict = {}
+    for student in stud_list:
+        student_dict = {}
+        student_dict["id"] = student["id"]
+        student_dict["full_name"] = student["full_name"]
+        result_list.append(student_dict)
+
+    stud_list_full_name = result_list
+    for student in stud_list_full_name:
+        for subject in subject_list:
+            student[subject["name"]] = '0'
+
+    stud_list_subject_bal = stud_list_full_name
+    for student in stud_list_subject_bal:
+        for subject in score_list:
+            if student["full_name"] == subject["full_name"]:
+                student[subject["subject"]] = subject["bal"]
+
     big_dict = {
-        'students_statistics': [
-            {
-                'id': 1,
-                'fio': 'Петров А.В.',
-                'matan': 2,
-                'bjd': 2.3,
-                'philosophy': 2.4,
-                'english': 2,
-                'sport': 2.1,
-                'average': 2.3,
-            },
-            {
-                'id': 2,
-                'fio': 'Сидоров В.Г.',
-                'matan': 3.5,
-                'bjd': 3.1,
-                'philosophy': 3.4,
-                'english': 2,
-                'sport': 3.9,
-            },
-            {
-                'id': 3,
-                'fio': 'Иванов К.Ю.',
-                'matan': 3.6,
-                'bjd': 3,
-                'philosophy': 3.6,
-                'english': 3.7,
-                'sport': 3.5,
-            },
-            {
-                'id': 4,
-                'fio': 'Попов А.Р.',
-                'matan': 3.4,
-                'bjd': 4,
-                'philosophy': 4.1,
-                'english': 3.2,
-                'sport': 3.7,
-            },
-            {
-                'id': 5,
-                'fio': 'Абрамова О.К.',
-                'matan': 3.0,
-                'bjd': 3.8,
-                'philosophy': 4.5,
-                'english': 3.7,
-                'sport': 3.3,
-            },
-            {
-                'id': 6,
-                'fio': 'Петрова А.Н.',
-                'matan': 4.2,
-                'bjd': 3.2,
-                'philosophy': 4.1,
-                'english': 4.1,
-                'sport': 3.2,
-            },
-            {
-                'id': 7,
-                'fio': 'Трунина П.Н.',
-                'matan': 2.2,
-                'bjd': 2.0,
-                'philosophy': 2.1,
-                'english': 2.4,
-                'sport': 2.0,
-            },
-        ],
+        'students_statistics': stud_list_subject_bal
     }
 
     def get_students(self):
@@ -99,11 +54,7 @@ class Student:
 
 
 class Statistics:
-    # student_id, [Scores]
-    #dict_students = Student.get_students()
-
     def calculate_average_bals(self,big_dict):
-        #big_dict = self.dict_students
         array_statistics = big_dict['students_statistics']
         len_big_dict = len(array_statistics)
 
@@ -112,7 +63,7 @@ class Statistics:
             dict_statistics = array_statistics[student]
             real_average = float(0.0)
             for key, value in dict_statistics.items():
-                if key != 'id' and key != 'fio':
+                if key != 'id' and key != 'full_name':
                     real_average += float(value)
 
             real_average = '{:.2f}'.format(real_average / 5)
@@ -147,23 +98,14 @@ class Statistics:
                                "; ФИО:" + dict_statistics['fio'] + \
                                "; нет среднего бала."
 
-        new_big_dict = big_dict
-        new_big_dict['excellent_students'] = excellent_students_array
-        new_big_dict['bad_students'] = bad_students_array
+        new_dict = big_dict
+        new_dict['excellent_students'] = excellent_students_array
+        new_dict['bad_students'] = bad_students_array
 
-        return new_big_dict
+        return new_dict
 
 class Subject:
     pass
-#название предмета
-#
 
-class Score:
-    # Subject, Student, value
+class Scores:
     pass
-
-'''
-students_list = Student.get_students()
-average_bals_students = Statistics.calculate_average_bals(students_list)
-perfomance_students = Statistics.calculate_performance(average_bals_students)
-'''
