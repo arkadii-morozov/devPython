@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.http import HttpResponseRedirect, request
 from django.views.generic.base import TemplateView
 
 from .models import Students,Subjects,Score
@@ -23,34 +24,33 @@ class IndexView(TemplateView):
 
 
 class Student:
-    stud_list = Students.objects.all().values()
-    score_list = Score.objects.all().values()
-    subject_list = Subjects.objects.all().values()
-    result_list = []
-    student_dict = {}
-    for student in stud_list:
-        student_dict = {}
-        student_dict["id"] = student["id"]
-        student_dict["full_name"] = student["full_name"]
-        result_list.append(student_dict)
-
-    stud_list_full_name = result_list
-    for student in stud_list_full_name:
-        for subject in subject_list:
-            student[subject["name"]] = '0'
-
-    stud_list_subject_bal = stud_list_full_name
-    for student in stud_list_subject_bal:
-        for subject in score_list:
-            if student["full_name"] == subject["full_name"]:
-                student[subject["subject"]] = subject["bal"]
-
-    big_dict = {
-        'students_statistics': stud_list_subject_bal
-    }
-
     def get_students(self):
-        return self.big_dict
+        stud_list = Students.objects.all().values()
+        score_list = Score.objects.all().values()
+        subject_list = Subjects.objects.all().values()
+        result_list = []
+        #student_dict = {}
+        for student in stud_list:
+            student_dict = {}
+            student_dict["id"] = student["id"]
+            student_dict["full_name"] = student["full_name"]
+            result_list.append(student_dict)
+
+        stud_list_full_name = result_list
+        for student in stud_list_full_name:
+            for subject in subject_list:
+                student[subject["name"]] = '0'
+
+        stud_list_subject_bal = stud_list_full_name
+        for student in stud_list_subject_bal:
+            for subject in score_list:
+                if student["full_name"] == subject["full_name"]:
+                    student[subject["subject"]] = subject["bal"]
+
+        big_dict = {
+            'students_statistics': stud_list_subject_bal
+        }
+        return big_dict
 
 
 class Statistics:
@@ -104,7 +104,14 @@ class Statistics:
 
         return new_dict
 
+
 class Subject:
+    # def create(self,request):
+    #     if request.method == "POST":
+    #         table_subjects = Subjects()
+    #         table_subjects.name = request.POST.get("name")
+    #         table_subjects.save()
+    #     return HttpResponseRedirect("/")
     pass
 
 class Scores:
