@@ -32,6 +32,19 @@
 	<body>
         <div class="container">
             <h1>Мой деканат</h1>
+            <form method="POST" action="">
+                {% csrf_token %}
+
+                {{form.as_p}}
+                <input type="submit" name="submit" value="Отправить" >
+            </form>
+
+            {% if submitbutton == "submit" %}
+                <h1>Stud first name is {{ firstname }}</h1>
+                <h1>Stud last name is {{ lastname }}</h1>
+                <h1>Stud full_name is {{ fullname }}</h1>
+            {% endif %}
+
             <h2>Успеваемость студентов</h2>
             <table class="table table-striped" >
                 <thead>

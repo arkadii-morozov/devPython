@@ -1,8 +1,35 @@
 # -*- coding: utf-8 -*-
-from django.http import HttpResponseRedirect, request
 from django.views.generic.base import TemplateView
-
+from .forms import UserForm
 from .models import Students,Subjects,Score
+from django.shortcuts import render
+from django.http import HttpResponse
+
+
+def index(request):
+    submitbutton = request.POST.get("submit")
+    firstname = ''
+    lastname = ''
+    fullname = ''
+    if request.method == "POST":
+        #form = UserForm(request.POST or None)
+        form = UserForm(request.POST)
+        if form.is_valid():
+            firstname = form.cleaned_data.get('name')
+            lastname = form.cleaned_data.get('surname')
+            fullname = form.cleaned_data.get('full_name')
+        else:
+            return HttpResponse("Invalid data")
+    else:
+        form = UserForm()
+        context = IndexView.get_context_data()
+        context['form'] = form
+        context['firstname'] = firstname
+        context['lastname'] = lastname
+        context['fullname'] = fullname
+        context['submitbutton'] = submitbutton
+        return render(request, 'index.html', context)
+
 
 class IndexView(TemplateView):
     template_name = "index.html"
@@ -12,16 +39,33 @@ class IndexView(TemplateView):
         statistics = Statistics()
         students_list_with_average_bals = statistics.calculate_average_bals(students_list)
         students_list_with_perfomance= statistics.calculate_performance(students_list_with_average_bals)
-
+        #####################
+        # students_list_with_perfomance['form'] = data['form']
+        # students_list_with_perfomance['firstname'] = data['firstname']
+        # students_list_with_perfomance['lastname'] = data['lastname']
+        # students_list_with_perfomance['fullname'] = data['fullname']
+        # students_list_with_perfomance['submitbutton'] = data['submitbutton']
+        #####################
         context = super(IndexView, self).get_context_data(**kwargs)
         context.update(
             students_list_with_perfomance
         )
         return context
 
-    def get_records(self): # Метод - получает записи из бд , помещает в словарь, возвращает словарь
-        pass
-
+    # def get_form(self, request):
+    #     submitbutton = request.POST.get("submit")
+    #     firstname = ''
+    #     lastname = ''
+    #     fullname = ''
+    #     form = UserForm(request.POST or None)
+    #     if form.is_valid():
+    #         firstname = form.cleaned_data.get('name')
+    #         lastname = form.cleaned_data.get('surname')
+    #         fullname = form.cleaned_data.get('full_name')
+    # 
+    #     data = {'form': form, 'firstname': firstname, 'lastname': lastname,
+    #             'fullname': fullname, 'submitbutton': submitbutton}
+    #     return data
 
 class Student:
     def get_students(self):
