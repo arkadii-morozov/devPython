@@ -6,28 +6,6 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 
-def index(request):
-    submitbutton = request.POST.get("submit")
-    firstname = ''
-    lastname = ''
-    fullname = ''
-    if request.method == "POST":
-        #form = UserForm(request.POST or None)
-        form = UserForm(request.POST)
-        if form.is_valid():
-            firstname = form.cleaned_data.get('name')
-            lastname = form.cleaned_data.get('surname')
-            fullname = form.cleaned_data.get('full_name')
-            form = UserForm()
-            context = IndexView.get_context_data()
-            context['form'] = form
-            context['firstname'] = firstname
-            context['lastname'] = lastname
-            context['fullname'] = fullname
-            context['submitbutton'] = submitbutton
-        return render(request, 'index.html', context)
-
-
 class IndexView(TemplateView):
     template_name = "index.html"
 
@@ -35,34 +13,68 @@ class IndexView(TemplateView):
         students_list = Student().get_students()
         statistics = Statistics()
         students_list_with_average_bals = statistics.calculate_average_bals(students_list)
-        students_list_with_perfomance= statistics.calculate_performance(students_list_with_average_bals)
-        #####################
-        # students_list_with_perfomance['form'] = data['form']
-        # students_list_with_perfomance['firstname'] = data['firstname']
-        # students_list_with_perfomance['lastname'] = data['lastname']
-        # students_list_with_perfomance['fullname'] = data['fullname']
-        # students_list_with_perfomance['submitbutton'] = data['submitbutton']
-        #####################
+        students_list_with_perfomance = statistics.calculate_performance(students_list_with_average_bals)
+
+        data_form = {}
+        if self.request.method == "POST":
+            form = UserForm(self.request.POST)
+            if form.is_valid():
+                submitbutton = self.request.POST.get('submit')
+                firstname = form.cleaned_data.get('name')
+                lastname = form.cleaned_data.get('surname')
+                fullname = form.cleaned_data.get('full_name')
+                data_form['form'] = form
+                data_form['firstname'] = firstname
+                data_form['lastname'] = lastname
+                data_form['fullname'] = fullname
+                data_form['submitbutton'] = submitbutton
+            else:
+                form = UserForm()
+                data_form['form'] = form
+        else:
+            form = UserForm()
+            data_form['form'] = form
+            data_form['firstname'] = ''
+            data_form['lastname'] = ''
+            data_form['fullname'] = ''
+            data_form['submitbutton'] = 'форма не отправлена'
+
+        students_list_with_perfomance['form'] = data_form['form']
+        students_list_with_perfomance['firstname'] = data_form['firstname']
+        students_list_with_perfomance['lastname'] = data_form['lastname']
+        students_list_with_perfomance['fullname'] = data_form['fullname']
+        students_list_with_perfomance['submitbutton'] = data_form['submitbutton']
         context = super(IndexView, self).get_context_data(**kwargs)
         context.update(
             students_list_with_perfomance
         )
         return context
 
-    # def get_form(self, request):
-    #     submitbutton = request.POST.get("submit")
+    # def get_form_data(self):
+    #     submitbutton = self.request.POST.get("submit")
     #     firstname = ''
     #     lastname = ''
     #     fullname = ''
-    #     form = UserForm(request.POST or None)
-    #     if form.is_valid():
-    #         firstname = form.cleaned_data.get('name')
-    #         lastname = form.cleaned_data.get('surname')
-    #         fullname = form.cleaned_data.get('full_name')
-    # 
-    #     data = {'form': form, 'firstname': firstname, 'lastname': lastname,
-    #             'fullname': fullname, 'submitbutton': submitbutton}
-    #     return data
+    #     context = {}
+    #     if self.request.method == "POST":
+    #         form = UserForm(self.request.POST)
+    #         if form.is_valid():
+    #             firstname = form.cleaned_data.get('name')
+    #             lastname = form.cleaned_data.get('surname')
+    #             fullname = form.cleaned_data.get('full_name')
+    #             context['form'] = form
+    #             context['firstname'] = firstname
+    #             context['lastname'] = lastname
+    #             context['fullname'] = fullname
+    #             context['submitbutton'] = submitbutton
+    #         else:
+    #             form = UserForm()
+    #             context['form'] = form
+    #         return context
+    #     else:
+    #         form = UserForm()
+    #         context['form'] = form
+    #         return context
 
 class Student:
     def get_students(self):
